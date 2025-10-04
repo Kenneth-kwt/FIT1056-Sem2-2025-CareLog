@@ -2,7 +2,7 @@ import json
 
 class logManager:
     """The main controller for all business logic and data handling."""
-    def __init__(self, data_path="data/msms.json"):
+    def __init__(self, data_path="data/careLog.json"):
         self.data_path = data_path
 
         self._load_data()
