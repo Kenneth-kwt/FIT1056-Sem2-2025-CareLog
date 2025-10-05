@@ -8,15 +8,18 @@ def _ensure_structure(data):
     Ensure the JSON always has the structure:
     {
         "users": [],
-        "patients": []
+        "patients": [],
+        "staff":[]
     }
     """
     if not data or not isinstance(data, dict):
-        return {"users": [], "patients": []}
+        return {"users": [], "patients": [],"staff":[]}
     if "users" not in data:
         data["users"] = []
     if "patients" not in data:
         data["patients"] = []
+    if "staff" not in data:
+        data["staff"] = []
     return data
 
 def seed_users():
