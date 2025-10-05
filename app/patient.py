@@ -28,7 +28,7 @@ class PatientUser(User):
             "logs": self.logs
         }
     
-    def add_log(self, mood=None, pain_level=None, notes=None):
+    def add_log(self, mood=None, pain_level=None, notes=None, sensitive_information=False):
             """Add a new log entry for the patient."""
             if pain_level is not None:
                 try:
@@ -41,7 +41,8 @@ class PatientUser(User):
                 "mood": mood,
                 "pain_level": pain_level,
                 "notes": notes,
-                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "sensitive_information": bool(sensitive_information)
             }
             self.logs.append(log_entry)
 
