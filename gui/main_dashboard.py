@@ -1,5 +1,5 @@
 import streamlit as st
-from services.patient_services import register_patient, add_patient_log, delete_patient
+from services.patient_service import register_patient, add_patient_log, delete_patient
 from services.staff_service import add_staff_log, view_patient_history
 from services.user_service import login, seed_users
 from utils.storage import load_data
