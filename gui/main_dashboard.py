@@ -2,6 +2,7 @@
 import streamlit as st
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 from services.patient_services import register_patient, add_patient_log, delete_patient
 from utils.storage import load_data
 
@@ -34,6 +35,8 @@ def launch():
     if page == "Register Patient":
         st.subheader("Register a New Patient")
 =======
+=======
+>>>>>>> Stashed changes
 from services.patient_services import register_patient, add_patient_log, delete_patient
 from services.staff_service import add_staff_log, view_patient_history
 from services.user_service import login, seed_users
@@ -105,11 +108,15 @@ def launch():
     # ---- Register Patient ----
     if page == "Register Patient":
         st.header("Register New Patient")
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
         with st.form("register_form"):
             user_id = st.text_input("User ID")
             password = st.text_input("Password", type="password")
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
             name = st.text_input("Name")
             age = st.number_input("Age", min_value=0, max_value=120, step=1)
@@ -331,6 +338,8 @@ def admin_dashboard():
 
 >>>>>>> Stashed changes
 =======
+=======
+>>>>>>> Stashed changes
             name = st.text_input("Full Name")
             age = st.number_input("Age", min_value=0, max_value=120, step=1)
             gender = st.selectbox("Gender", ["Male", "Female", "Other"])
@@ -489,4 +498,7 @@ def admin_dashboard():
             st.error("ERROR: Your patient record was not found.")
 
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
