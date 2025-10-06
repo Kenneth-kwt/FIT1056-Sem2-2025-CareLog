@@ -77,6 +77,8 @@ def delete_user(user_id: str) -> bool:
     # Remove user from users
     users_before = len(data["users"])
     data["users"] = [u for u in data["users"] if u["user_id"] != user_id]
+    data['staff'] = [s for s in data["staff"] if s["user_id"] != user_id]
+    data['patients'] = [p for p in data["patients"] if p["user_id"] != user_id]
 
     if len(data["users"]) == users_before:
         return False  # nothing deleted
