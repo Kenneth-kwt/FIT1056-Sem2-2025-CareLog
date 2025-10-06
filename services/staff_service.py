@@ -6,6 +6,32 @@ from app.patient import PatientUser
 
 CARELOG_FILE = "data/careLog.json"
 data = load_data(CARELOG_FILE)
+
+def register_staff(user_id, password, speciality, name):
+    """
+    Register a new staff member: 
+    - Creates a login account (via add_user in user_service)
+    - Creates the staff record
+    Returns the new StaffUser object if successful, None if user already exists.
+    """
+
+    # Step 1: add login account (role = staff)
+    user = add_user(user_id, password, role="staff")
+    if not user:
+        return None  # user already exists
+
+    # Step 2: add staff record
+    data = load_data(CARELOG_FILE)
+    data = _ensure_structure(data)
+
+    new_staff = StaffUser(user_id, password, speciality, name)
+    data["staff"].append(new_staff.to_dict())
+    data["next_user_id"] = int(user_id) + 1
+    # Step 3: save everything
+    save_data(CARELOG_FILE, data)
+
+    return new_staff
+
 def add_staff_log(staff_id,patient_name= None,patient_symptoms =None,patient_log_timestamp=None,diagnosis = None,prescription = None,notes = None,patient_logs = None):
     data = _ensure_structure(data)
     staffs = data.get("staff",[])

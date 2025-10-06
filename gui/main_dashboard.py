@@ -16,6 +16,7 @@ from gui.config_patient import (
     assign_staff_to_patient_form
 )
 from gui.config_general import delete_user_form
+from gui.config_staff import register_staff_form
 
 CARELOG_FILE = "data/careLog.json"
 
@@ -67,6 +68,10 @@ def launch():
     # ---- Register Patient ----
     if page == "Register Patient":
         patient_register_form()
+
+    # ---- Register Staff ----
+    elif page == "Register Staff":
+        register_staff_form()
 
     # ---- Delete User ----
     elif page == "Delete User":
