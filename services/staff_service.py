@@ -5,7 +5,6 @@ from services.user_service import _ensure_structure, delete_user
 from app.patient import PatientUser
 
 CARELOG_FILE = "data/careLog.json"
-data = load_data(CARELOG_FILE)
 
 def register_staff(user_id, password, speciality, name):
     """
@@ -33,6 +32,7 @@ def register_staff(user_id, password, speciality, name):
     return new_staff
 
 def add_staff_log(staff_id,patient_name= None,patient_symptoms =None,patient_log_timestamp=None,diagnosis = None,prescription = None,notes = None,patient_logs = None):
+    data = load_data(CARELOG_FILE)
     data = _ensure_structure(data)
     staffs = data.get("staff",[])
     patient = data.get("patients", [])
@@ -71,6 +71,7 @@ def add_staff_log(staff_id,patient_name= None,patient_symptoms =None,patient_log
 
 def find_patient_logs(patient_id,timestamp):
     """Find patients log based on patient ID and timestamp"""
+    data = load_data(CARELOG_FILE)
     patients = data.get("patients",[])
     #Load all patients
     for p in patients:
@@ -89,6 +90,7 @@ def find_patient_logs(patient_id,timestamp):
             
 def view_patient_history(patient_id):
     """View patients logs based on patient ID"""
+    data = load_data(CARELOG_FILE)
     patients = data.get("patients",[])
     staff = data.get("staff",[])
     staff_logs = {}
