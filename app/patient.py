@@ -1,9 +1,9 @@
-from app.user import User
 import time
+from app.user import User
 
 class PatientUser(User):
     """Represents a patient, inheriting from the base User class."""
-    def __init__(self, user_id, password, name, age, gender, ailment, culture_and_religion, assigned_doctor_ids=None):
+    def __init__(self, user_id, password, name, age, gender, ailment, culture_and_religion, assigned_staff_ids=None):
         super().__init__(user_id, password, role="patient")
         self.name = name
         self.age = age
@@ -11,7 +11,7 @@ class PatientUser(User):
         self.ailment = ailment
         self.culture_and_religion = culture_and_religion
         self.logs = []
-        self.assigned_doctor_ids = assigned_doctor_ids or []
+        self.assigned_staff_ids = assigned_staff_ids or []
 
     def to_dict(self): 
         """Convert PatientUser object into a dictionary for JSON storage."""
@@ -24,7 +24,7 @@ class PatientUser(User):
             "gender": self.gender,
             "ailment": self.ailment,
             "culture_and_religion": self.culture_and_religion,
-            "assigned_doctor_ids": self.assigned_doctor_ids,
+            "assigned_staff_ids": self.assigned_staff_ids,
             "logs": self.logs
         }
     
@@ -57,7 +57,7 @@ class PatientUser(User):
             gender=data.get("gender"),
             ailment=data.get("ailment"),
             culture_and_religion=data.get("culture_and_religion"),
-            assigned_doctor_ids=data.get("assigned_doctor_ids", [])
+            assigned_staff_ids=data.get("assigned_staff_ids", [])
         )
         patient.logs = data.get("logs", [])
         return patient

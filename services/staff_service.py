@@ -73,7 +73,7 @@ def view_patient_history(patient_id):
             patient_logs = p["logs"]
             patient_ailment = p["ailment"]
             for s in staff:
-                if s["user_id"] in p["assigned_doctor_ids"]:
+                if s["user_id"] in p["assigned_staff_ids"]:
                     staff_logs[s["name"]] = s["logs"]
     #Store staff logs as "staff_name":[list of logs]
             

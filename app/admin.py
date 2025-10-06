@@ -14,17 +14,6 @@ class AdminUser(User):
             "role": self.role,
             "name": self.name
         }
-    
-    def add_user(self, user_id, password, name, role="admin"):
-            """Add a new user to the system."""
-            new_user = None
-            if role == 'admin':
-                new_user = AdminUser(user_id, password, name)
-            elif role == 'patient':
-                new_user = PatientUser(user_id, password, name)
-            elif role == 'staff':
-                new_user = StaffUser(user_id, password, name)
-            return new_user
 
     @classmethod
     def from_dict(cls, data):
