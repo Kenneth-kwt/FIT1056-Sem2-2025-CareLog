@@ -24,6 +24,16 @@
             "user_id": "2",
             "password": "patient",
             "role": "patient"
+        },
+        {
+            "user_id": "3",
+            "password": "333",
+            "role": "patient"
+        },
+        {
+            "user_id": "4",
+            "password": "staff",
+            "role": "staff"
         }
     ],
     "patients": [
@@ -40,6 +50,28 @@
                 "1"
             ],
             "logs": []
+        },
+        {
+            "user_id": "3",
+            "password": "333",
+            "role": "patient",
+            "name": "33",
+            "age": 12,
+            "gender": "Male",
+            "ailment": "",
+            "culture_and_religion": "",
+            "assigned_staff_ids": [
+                "4"
+            ],
+            "logs": [
+                {
+                    "mood": "happy",
+                    "pain_level": 9,
+                    "notes": "it's painful",
+                    "timestamp": "2025-10-06 18:48:32",
+                    "sensitive_information": true
+                }
+            ]
         }
     ],
     "staff": [
@@ -53,7 +85,37 @@
                 "2"
             ],
             "logs": []
+        },
+        {
+            "user_id": "4",
+            "password": "staff",
+            "role": "staff",
+            "name": "doctor",
+            "speciality": "staff",
+            "assigned_patient_ids": [
+                "3"
+            ],
+            "logs": [
+                {
+                    "patient_id": "3",
+                    "patient_symptoms": "44444",
+                    "patient_log_timestamp": "",
+                    "diagnosis": "",
+                    "prescription": "",
+                    "notes": "",
+                    "staff_log_timestamp": "2025-10-06 18:58:43"
+                },
+                {
+                    "patient_id": "3",
+                    "patient_symptoms": "fsfsf",
+                    "patient_log_timestamp": "",
+                    "diagnosis": "",
+                    "prescription": "",
+                    "notes": "",
+                    "staff_log_timestamp": "2025-10-06 18:59:21"
+                }
+            ]
         }
     ],
-    "next_user_id": 3
+    "next_user_id": 5
 }
