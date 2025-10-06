@@ -1,0 +1,22 @@
+{
+    "users": [
+        {
+            "user_id": "alice",
+            "password": "123",
+            "role": "patient"
+        },
+        {
+            "user_id": "bob",
+            "password": "123",
+            "role": "staff"
+        },
+        {
+            "user_id": "admin",
+            "password": "admin",
+            "role": "admin"
+        }
+    ],
+    "patients": [],
+    "staff": [],
+    "next_user_id": 1
+}

@@ -1,5 +1,6 @@
-from user import User
 import time
+from app.user import User
+
 class StaffUser(User):
     def __init__(self, user_id, password,speciality,
                  name,role='staff',assigned_patient_ids = []):
