@@ -49,7 +49,7 @@ def register_patient(user_id, password, name, age, gender, ailment, culture_and_
 
     new_patient = PatientUser(user_id, password, name, age, gender, ailment, culture_and_religion)
     data["patients"].append(new_patient.to_dict())
-
+    data["next_user_id"] = int(user_id) + 1
     # Step 3: save everything
     save_data(CARELOG_FILE, data)
 
