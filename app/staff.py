@@ -24,7 +24,7 @@ class StaffUser(User):
                       }
         return staff_dict
     
-    def add_log(self,patient_name= None,
+    def add_log(self,patient_id= None,
                 patient_symptoms =None,patient_log_timestamp=None,
                 diagnosis = None,prescription = None,notes = None,
                 patient_logs = None):
@@ -42,7 +42,7 @@ class StaffUser(User):
             patient_timestamp = None
 
         log_entry = {
-            "patient_name" : patient_name,
+            "patient_id" : patient_id,
             "patient_symptoms" : patient_symptoms,
             "patient_log_timestamp" : patient_timestamp,
             "patient_symptoms" : patient_symptoms,
@@ -51,7 +51,8 @@ class StaffUser(User):
             "notes" : notes,
             "staff_log_timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
         }
-        return log_entry
+        self.logs.append(log_entry)
+        return
     
     @classmethod
     def from_dict(cls, data):
@@ -62,7 +63,6 @@ class StaffUser(User):
             role = data.get("role"),
             name = data.get("name"),
             speciality=data.get("speciality"),
-            ailment=data.get("ailment"),
             assigned_patient_ids=data.get("assigned_patient_ids",[])
 
         )

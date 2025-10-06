@@ -31,7 +31,7 @@ def register_staff(user_id, password, speciality, name):
 
     return new_staff
 
-def add_staff_log(staff_id,patient_name= None,patient_symptoms =None,patient_log_timestamp=None,diagnosis = None,prescription = None,notes = None,patient_logs = None):
+def add_staff_log(staff_id,patient_id= None,patient_symptoms =None,patient_log_timestamp=None,diagnosis = None,prescription = None,notes = None,patient_logs = None):
     data = load_data(CARELOG_FILE)
     data = _ensure_structure(data)
     staffs = data.get("staff",[])
@@ -42,18 +42,18 @@ def add_staff_log(staff_id,patient_name= None,patient_symptoms =None,patient_log
             #Find the staff 
 
             for i,p in enumerate(patient):
-                if p["name"] == patient_name:
+                if p["user_id"] == patient_id:
                     found_patient_id = p["user_id"]
             if found_patient_id not in s["assigned_patient_ids"]:
                 #If patient is not assigned to staff:
                 
-                print(f'Patient with name {patient_name} is not assinged to staff of staff ID {staff_id}')
+                print(f'Patient with ID {patient_id} is not assinged to staff of staff ID {staff_id}')
                 return None
             else:
                 staff = StaffUser.from_dict(s)
                 #Create StaffUser object from dic
                 # t
-                staff.add_log(patient_name= patient_name,patient_symptoms =patient_symptoms,
+                staff.add_log(patient_id= patient_id,patient_symptoms =patient_symptoms,
                               patient_log_timestamp=patient_log_timestamp,
                               diagnosis = diagnosis,
                               prescription = prescription,
@@ -88,7 +88,7 @@ def find_patient_logs(patient_id,timestamp):
     return None
     #Not found
             
-def view_patient_history(patient_id):
+def view_patient_history(patient_id, staff_id):
     """View patients logs based on patient ID"""
     data = load_data(CARELOG_FILE)
     patients = data.get("patients",[])
@@ -98,6 +98,9 @@ def view_patient_history(patient_id):
 
     for p in patients:
         if p["user_id"] == patient_id:
+            if staff_id not in p["assigned_staff_ids"]:
+                #If staff ID isn't assigned to patient, return None
+                return False, f'Staff with ID {staff_id} is not assigned to patient with ID {patient_id}'
             patient_logs = p["logs"]
             patient_ailment = p["ailment"]
             for s in staff:
@@ -106,8 +109,8 @@ def view_patient_history(patient_id):
     #Store staff logs as "staff_name":[list of logs]
             
             patient_history = {'patient_ailment': patient_ailment,'patient_logs':patient_logs, 'staff_logs':staff_logs}
-            return patient_history
+            return True, patient_history
     #If patient found, return patient ailemnt and logs as 
-    return None
-    #If patient isn't found, retunr None
+    return False, f"Patient with ID {patient_id} not found"
+    #If patient isn't found, return None
             
