@@ -14,9 +14,46 @@
             "user_id": "admin",
             "password": "admin",
             "role": "admin"
+        },
+        {
+            "user_id": "1",
+            "password": "staff",
+            "role": "staff"
+        },
+        {
+            "user_id": "2",
+            "password": "patient",
+            "role": "patient"
         }
     ],
-    "patients": [],
-    "staff": [],
-    "next_user_id": 1
+    "patients": [
+        {
+            "user_id": "2",
+            "password": "patient",
+            "role": "patient",
+            "name": "PatientABC",
+            "age": 15,
+            "gender": "Male",
+            "ailment": "",
+            "culture_and_religion": "",
+            "assigned_staff_ids": [
+                "1"
+            ],
+            "logs": []
+        }
+    ],
+    "staff": [
+        {
+            "user_id": "1",
+            "password": "staff",
+            "role": "staff",
+            "name": "Doctor",
+            "speciality": "Testing",
+            "assigned_patient_ids": [
+                "2"
+            ],
+            "logs": []
+        }
+    ],
+    "next_user_id": 3
 }
