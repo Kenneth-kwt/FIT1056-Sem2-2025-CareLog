@@ -1,12 +1,23 @@
 import streamlit as st
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from services.patient_service import register_patient, add_patient_log, delete_patient
 from services.staff_service import add_staff_log, view_patient_history
 from services.user_service import login, seed_users
 from utils.storage import load_data
-from app.log import logManager
+
+from gui.login import show_login_page
+from gui.config_patient import (
+    patient_register_form,
+    view_all_patients,
+    view_patient_history_page,
+    assign_staff_to_patient_form
+)
+from gui.config_general import delete_user_form
 
 CARELOG_FILE = "data/careLog.json"
-
 
 def launch():
     """Sets up the main Streamlit application window and navigation."""
@@ -21,23 +32,7 @@ def launch():
 
     # --- Login Page ---
     if not st.session_state.user:
-        st.title("🔐 CareLog System Login")
-        st.markdown("Please sign in to access the system.")
-        with st.form("login_form"):
-            user_id = st.text_input("User ID")
-            password = st.text_input("Password", type="password")
-            submitted = st.form_submit_button("Login")
-
-            if submitted:
-                user = login(user_id, password)
-                if user:
-                    st.session_state.user = user
-                    st.success(f"Logged in as {user.user_id} ({user.role})")
-                    st.experimental_rerun()
-                else:
-                    st.error("Invalid credentials")
-
-        st.stop()  # prevent showing main UI before login
+        show_login_page()
 
     # --- Top Navigation Bar ---
     user = st.session_state.user
@@ -45,16 +40,18 @@ def launch():
     st.sidebar.caption(f"Role: {user.role}")
     if st.sidebar.button("Logout"):
         st.session_state.user = None
-        st.experimental_rerun()
+        st.rerun()
 
     # --- Navigation Menu (based on role) ---
     if user.role == "admin":
         pages = [
             "Register Patient",
-            "Delete Patient",
+            "Register Staff",
+            "Delete User",
             "View All Patients",
             "Add Staff Log",
-            "View Patient History"
+            "View Patient History",
+            "Assign Staff to Patient"
         ]
     elif user.role == "staff":
         pages = ["Add Staff Log", "View Patient History"]
@@ -69,63 +66,15 @@ def launch():
     # ================= ADMIN / STAFF / PATIENT INTERFACES =================
     # ---- Register Patient ----
     if page == "Register Patient":
-        st.header("🩺 Register New Patient")
+        patient_register_form()
 
-        with st.form("register_form"):
-            user_id = st.text_input("User ID")
-            password = st.text_input("Password", type="password")
-            name = st.text_input("Full Name")
-            age = st.number_input("Age", min_value=0, max_value=120, step=1)
-            gender = st.selectbox("Gender", ["Male", "Female", "Other"])
-            ailment = st.text_input("Ailment / Condition")
-            culture_and_religion = st.text_input("Culture and Religion")
-
-            submitted = st.form_submit_button("Register Patient")
-
-            if submitted:
-                patient = register_patient(user_id, password, name, age, gender, ailment, culture_and_religion)
-                if patient:
-                    st.success(f"Patient '{name}' registered successfully!")
-                else:
-                    st.error("Registration failed — user may already exist.")
-
-    # ---- Delete Patient ----
-    elif page == "Delete Patient":
-        st.header("🗑️ Delete Patient Record")
-
-        user_id = st.text_input("Enter Patient User ID to delete")
-        if st.button("Delete Patient"):
-            if delete_patient(user_id):
-                st.success(f"Patient '{user_id}' deleted successfully.")
-            else:
-                st.error("Patient not found or could not be deleted.")
+    # ---- Delete User ----
+    elif page == "Delete User":
+        delete_user_form()
 
     # ---- View All Patients ----
     elif page == "View All Patients":
-        st.header("View All Registered Patients")
-
-        data = load_data(CARELOG_FILE)
-        if "patients" in data and data["patients"]:
-            for p in data["patients"]:
-                with st.expander(f"{p.get('name', 'Unknown')} ({p.get('user_id')})"):
-                    st.write(f"**Age:** {p.get('age')}")
-                    st.write(f"**Gender:** {p.get('gender')}")
-                    st.write(f"**Ailment:** {p.get('ailment')}")
-                    st.write(f"**Culture & Religion:** {p.get('culture_and_religion')}")
-                    st.write("**Logs:**")
-                    logs = p.get("logs", [])
-                    if logs:
-                        for log in logs:
-                            st.markdown(
-                                f"- *{log.get('timestamp', 'No Time')}*: "
-                                f"Mood: **{log.get('mood', 'N/A')}**, "
-                                f"Pain: {log.get('pain_level', 'N/A')}, "
-                                f"Notes: {log.get('notes', '')}"
-                            )
-                    else:
-                        st.info("No logs recorded yet.")
-        else:
-            st.warning("No patients found in the system.")
+        view_all_patients()
 
     # ---- Add Staff Log ----
     elif page == "Add Staff Log":
@@ -162,32 +111,11 @@ def launch():
 
     # ---- View Patient History ----
     elif page == "View Patient History":
-        st.header("View Patient Full History")
+        view_patient_history_page()
 
-        patient_id = st.text_input("Enter Patient User ID")
-
-        if st.button("View History"):
-            history = view_patient_history(patient_id)
-            if history:
-                st.subheader("Patient Details")
-                st.write(f"**Ailment:** {history['patient_ailment']}")
-                st.write("**Patient Logs:**")
-                for log in history["patient_logs"]:
-                    st.markdown(
-                        f"- {log.get('timestamp', 'N/A')}: Mood {log.get('mood', 'N/A')}, "
-                        f"Pain {log.get('pain_level', 'N/A')} — {log.get('notes', '')}"
-                    )
-                st.write("**Staff Logs:**")
-                for staff_name, logs in history["staff_logs"].items():
-                    st.markdown(f"**{staff_name}**")
-                    for log in logs:
-                        st.markdown(
-                            f"   - Diagnosis: {log.get('diagnosis', 'N/A')}, "
-                            f"Prescription: {log.get('prescription', 'N/A')}, "
-                            f"Notes: {log.get('notes', '')}"
-                        )
-            else:
-                st.error("Patient not found or no history available.")
+    ## ---- Assign Staff to Patient ----
+    elif page == "Assign Staff to Patient":
+        assign_staff_to_patient_form()
 
     # ---- Add Patient Log ----
     elif page == "Add Patient Log":
@@ -230,7 +158,3 @@ def launch():
                 st.info("No logs recorded yet.")
         else:
             st.error("Your patient record was not found.")
-
-
-
-
