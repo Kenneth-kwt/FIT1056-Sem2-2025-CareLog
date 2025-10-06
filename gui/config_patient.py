@@ -66,13 +66,14 @@ def view_all_patients():
 
 def view_patient_history_page():
     """Display the history of a specific patient."""
+    user = st.session_state.user
     st.header("View Patient Full History")
 
     patient_id = st.text_input("Enter Patient User ID")
 
     if st.button("View History"):
-        history = view_patient_history(patient_id)
-        if history:
+        status, history = view_patient_history(patient_id, user.user_id)
+        if status:
             st.subheader("Patient Details")
             st.write(f"**Ailment:** {history['patient_ailment']}")
             st.write("**Patient Logs:**")
@@ -91,7 +92,7 @@ def view_patient_history_page():
                         f"Notes: {log.get('notes', '')}"
                     )
         else:
-            st.error("Patient not found or no history available.")
+            st.warning(history)
 
 def assign_staff_to_patient_form():
     """Display the form to assign staff to a patient."""

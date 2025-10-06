@@ -87,7 +87,7 @@ def launch():
 
         with st.form("staff_log_form"):
             staff_id = user.user_id if user.role == "staff" else st.text_input("Staff User ID")
-            patient_name = st.text_input("Patient Name")
+            patient_id = st.text_input("Patient ID")
             patient_symptoms = st.text_input("Patient Symptoms")
             patient_log_timestamp = st.text_input("Patient Log Timestamp (optional)")
             diagnosis = st.text_area("Diagnosis")
@@ -100,7 +100,7 @@ def launch():
             if submitted:
                 staff = add_staff_log(
                     staff_id,
-                    patient_name=patient_name,
+                    patient_id=patient_id,
                     patient_symptoms=patient_symptoms,
                     patient_log_timestamp=patient_log_timestamp,
                     diagnosis=diagnosis,
@@ -110,7 +110,7 @@ def launch():
                 )
 
                 if staff:
-                    st.success(f"Log added successfully for staff '{staff_id}' and patient '{patient_name}'")
+                    st.success(f"Log added successfully for staff '{staff_id}' and patient '{patient_id}'")
                 else:
                     st.error("Staff not found or patient not assigned!")
 
