@@ -5,8 +5,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils.storage import load_data
 
-from services.patient_service import register_patient, delete_patient
-from services.admin_service import assign_staff_to_patient
+from services.patient_service import register_patient, delete_patient,patient_bill
+from services.admin_service import assign_staff_to_patient,view_patient_history_admin
 from services.staff_service import add_staff_log, view_patient_history
 
 CARELOG_FILE = "data/careLog.json"
@@ -106,3 +106,124 @@ def assign_staff_to_patient_form():
             st.success(f"Staff '{staff_id}' assigned to patient '{patient_id}' successfully.")
         else:
             st.error("Assignment failed — patient not found or staff already assigned.")
+
+def payment_form():
+    """Display a form for patients to pay their medical bills."""
+    st.header("Pay Medical Bill")
+
+    # Make sure the user is logged in
+    if "user" not in st.session_state or st.session_state.user.role.lower() != "patient":
+        st.warning("Please log in as a patient to access this feature.")
+        return
+
+    user = st.session_state.user
+    st.write(f"Logged in as: **{user.user_id}**")
+
+    # Payment form
+    with st.form("payment_form"):
+        amount = st.number_input("Amount (RM)", min_value=0.0, step=0.5, format="%.2f")
+        method = st.selectbox("Payment Method", ["Credit Card", "Debit Card", "Online Banking", "Cash"])
+        notes = st.text_area("Notes (optional)", placeholder="E.g. paying for MRI scan")
+
+        submitted = st.form_submit_button("Submit Payment")
+
+        if submitted:
+            if amount <= 0:
+                st.error("Please enter a valid payment amount.")
+            else:
+                patient = patient_bill(user.user_id, amount, method, notes)
+                if patient:
+                    st.success(f"Payment of RM{amount:.2f} via {method} was successful!")
+                else:
+                    st.error("Payment failed. Patient record not found.")
+
+def view_billing_history():
+    """Display billing/payment history for all patients (admin/staff access)."""
+    st.header("View All Patients' Billing History")
+
+    data = load_data(CARELOG_FILE)
+    patients = data.get("patients", [])
+
+    if not patients:
+        st.warning("No patient records found.")
+        return
+
+    has_any_billing = False
+    for patient in patients:
+        billing_records = patient.get("bills", [])
+
+        if billing_records:
+            has_any_billing = True
+            with st.expander(f"{patient.get('name', 'Unknown')} (User ID: {patient.get('user_id')})"):
+                for i, record in enumerate(billing_records, start=1):
+                    st.markdown(f"**Payment {i}:**")
+                    st.write(f"- **Amount:** RM {record.get('amount', 'N/A')}")
+                    st.write(f"- **Method:** {record.get('method', 'N/A')}")
+                    st.write(f"- **Notes:** {record.get('notes', '-')}")
+                    st.write(f"- **Timestamp:** {record.get('timestamp', 'N/A')}")
+                    st.markdown("---")
+
+    if not has_any_billing:
+        st.info("No billing records have been added yet.")
+
+def view_patient_history_admin_page():
+    """Display a patient's full history for admins, with dropdown patient selection."""
+    user = st.session_state.user
+    st.header("View Patient Full History (Admin Access)")
+
+    # Load patient data for dropdown
+    data = load_data(CARELOG_FILE)
+    patients = data.get("patients", [])
+
+    if not patients:
+        st.warning("No patients found in the system.")
+        return
+
+    # Build a list of options like "John Doe (P001)"
+    patient_options = [f"{p['name']} ({p['user_id']})" for p in patients]
+    selected_patient = st.selectbox("Select a Patient", patient_options)
+
+    # Extract patient_id from selection
+    patient_id = selected_patient.split("(")[-1].replace(")", "").strip()
+
+    if st.button("View History"):
+        status, history = view_patient_history_admin(patient_id, user.user_id)
+
+        if status:
+            st.subheader("Patient Details")
+            st.write(f"**Ailment:** {history['patient_ailment']}")
+
+            # --- Patient Logs ---
+            st.write("### Patient Logs")
+            patient_logs = history.get("patient_logs", [])
+            if patient_logs:
+                for log in patient_logs:
+                    st.markdown(
+                        f"- **{log.get('timestamp', 'N/A')}** | "
+                        f"Mood: {log.get('mood', 'N/A')} | "
+                        f"Pain: {log.get('pain_level', 'N/A')}  \n"
+                        f"Notes: {log.get('notes', '')}"
+                    )
+            else:
+                st.info("No patient logs available.")
+
+            # --- Staff Logs ---
+            st.write("### Staff Logs")
+            staff_logs = history.get("staff_logs", {})
+            if staff_logs:
+                for staff_name, logs in staff_logs.items():
+                    with st.expander(f"Logs by {staff_name}", expanded=False):
+                        if logs:
+                            for log in logs:
+                                st.markdown(
+                                    f"- **Diagnosis:** {log.get('diagnosis', 'N/A')}  \n"
+                                    f"  **Prescription:** {log.get('prescription', 'N/A')}  \n"
+                                    f"  **Notes:** {log.get('notes', '')}"
+                                )
+                        else:
+                            st.write("_No logs recorded by this staff member._")
+            else:
+                st.info("No staff logs available.")
+        else:
+            st.warning(history)
+
