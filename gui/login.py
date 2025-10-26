@@ -7,7 +7,7 @@ from services.user_service import login
 
 def show_login_page():
     """Display the login page and handle user authentication."""
-    st.title("🔐 CareLog System Login")
+    st.title("CareLog System Login")
     st.markdown("Please sign in to access the system.")
     with st.form("login_form"):
         user_id = st.text_input("User ID")
