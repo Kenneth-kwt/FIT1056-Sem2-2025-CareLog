@@ -187,7 +187,7 @@ def view_patient_history_admin_page():
     patient_id = selected_patient.split("(")[-1].replace(")", "").strip()
 
     if st.button("View History"):
-        status, history = view_patient_history_admin(patient_id, user.user_id)
+        status, history = view_patient_history_admin(patient_id)
 
         if status:
             st.subheader("Patient Details")
