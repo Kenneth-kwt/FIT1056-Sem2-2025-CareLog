@@ -3,12 +3,13 @@ import pytest
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from services.patient_service import register_patient, add_patient_log, delete_patient
 from services.staff_service import view_patient_history, register_staff, add_staff_log, find_patient_logs
 from services.admin_service import assign_staff_to_patient
 from services.user_service import delete_user, login
 
+@pytest.fixture
+# def test_patient_services():
 def test_register_patient():
     # Register a new patient
     patient = register_patient("123", "pass123", "Test Patient", 30, "Other", "Male", "None")
