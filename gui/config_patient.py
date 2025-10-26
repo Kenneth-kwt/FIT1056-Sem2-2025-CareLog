@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.storage import load_data
 
 from services.patient_service import register_patient, delete_patient,patient_bill
-from services.admin_service import assign_staff_to_patient
+from services.admin_service import assign_staff_to_patient,view_patient_history_admin
 from services.staff_service import add_staff_log, view_patient_history
 
 CARELOG_FILE = "data/careLog.json"
@@ -165,3 +165,65 @@ def view_billing_history():
 
     if not has_any_billing:
         st.info("No billing records have been added yet.")
+
+def view_patient_history_admin_page():
+    """Display a patient's full history for admins, with dropdown patient selection."""
+    user = st.session_state.user
+    st.header("View Patient Full History (Admin Access)")
+
+    # Load patient data for dropdown
+    data = load_data(CARELOG_FILE)
+    patients = data.get("patients", [])
+
+    if not patients:
+        st.warning("No patients found in the system.")
+        return
+
+    # Build a list of options like "John Doe (P001)"
+    patient_options = [f"{p['name']} ({p['user_id']})" for p in patients]
+    selected_patient = st.selectbox("Select a Patient", patient_options)
+
+    # Extract patient_id from selection
+    patient_id = selected_patient.split("(")[-1].replace(")", "").strip()
+
+    if st.button("View History"):
+        status, history = view_patient_history_admin(patient_id, user.user_id)
+
+        if status:
+            st.subheader("Patient Details")
+            st.write(f"**Ailment:** {history['patient_ailment']}")
+
+            # --- Patient Logs ---
+            st.write("### Patient Logs")
+            patient_logs = history.get("patient_logs", [])
+            if patient_logs:
+                for log in patient_logs:
+                    st.markdown(
+                        f"- **{log.get('timestamp', 'N/A')}** | "
+                        f"Mood: {log.get('mood', 'N/A')} | "
+                        f"Pain: {log.get('pain_level', 'N/A')}  \n"
+                        f"Notes: {log.get('notes', '')}"
+                    )
+            else:
+                st.info("No patient logs available.")
+
+            # --- Staff Logs ---
+            st.write("### Staff Logs")
+            staff_logs = history.get("staff_logs", {})
+            if staff_logs:
+                for staff_name, logs in staff_logs.items():
+                    with st.expander(f"Logs by {staff_name}", expanded=False):
+                        if logs:
+                            for log in logs:
+                                st.markdown(
+                                    f"- **Diagnosis:** {log.get('diagnosis', 'N/A')}  \n"
+                                    f"  **Prescription:** {log.get('prescription', 'N/A')}  \n"
+                                    f"  **Notes:** {log.get('notes', '')}"
+                                )
+                        else:
+                            st.write("_No logs recorded by this staff member._")
+            else:
+                st.info("No staff logs available.")
+        else:
+            st.warning(history)
+

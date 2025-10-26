@@ -36,3 +36,40 @@ def assign_staff_to_patient(patient_id, staff_id):
 
     return False  # Patient not found
 
+def view_patient_history_admin(patient_id, admin_id):
+    """View patient's logs based on patient ID (for admins)."""
+    data = load_data(CARELOG_FILE)
+    data = _ensure_structure(data)
+
+    patients = data.get("patients", [])
+    staff = data.get("staff", [])
+
+    # Default to None (for clarity)
+    patient_history = None
+
+    # Find the patient
+    for p in patients:
+        if p.get("user_id") == patient_id:
+            patient_logs = p.get("logs", [])
+            patient_ailment = p.get("ailment", "Unknown")
+
+            # Gather logs from assigned staff
+            staff_logs = {}
+            for s in staff:
+                if s.get("user_id") in p.get("assigned_staff_ids", []):
+                    staff_logs[s.get("name", "Unknown Staff")] = s.get("logs", [])
+
+            # Build and assign patient history
+            patient_history = {
+                "patient_ailment": patient_ailment,
+                "patient_logs": patient_logs,
+                "staff_logs": staff_logs
+            }
+
+            break
+
+    # Return safely
+    if patient_history is not None:
+        return True, patient_history
+    else:
+        return False, f"Patient with ID {patient_id} was not found"
