@@ -167,7 +167,6 @@ def payment_form():
         notes = st.text_area("Notes (optional)", placeholder="E.g. paying for MRI scan")
 
         submitted = st.form_submit_button("Submit Payment")
-
         if submitted:
             if amount <= 0:
                 st.error("Please enter a valid payment amount.")
