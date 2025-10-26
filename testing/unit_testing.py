@@ -9,8 +9,6 @@ from services.admin_service import assign_staff_to_patient
 from services.user_service import delete_user, login, add_user
 
 @pytest.fixture
-# def test_patient_services():
-
 def test_add_user():
     user = add_user("123", "pass123", "patient");
     assert user is not None
