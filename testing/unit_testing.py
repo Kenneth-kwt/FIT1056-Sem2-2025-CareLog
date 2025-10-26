@@ -3,9 +3,10 @@ import pytest
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from services.patient_service import register_patient, add_patient_log, delete_patient
 from services.staff_service import view_patient_history
+
+@pytest.fixture
 
 def test_patient_services():
     # Register a new patient
@@ -30,3 +31,6 @@ def test_patient_services():
     # Delete the patient
     result = delete_patient("123")
     assert result is True
+
+
+

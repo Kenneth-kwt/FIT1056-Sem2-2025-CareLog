@@ -47,7 +47,7 @@ def add_staff_log(staff_id,patient_id= None,patient_symptoms =None,patient_log_t
             if found_patient_id not in s["assigned_patient_ids"]:
                 #If patient is not assigned to staff:
                 
-                print(f'Patient with ID {patient_id} is not assinged to staff of staff ID {staff_id}')
+                print(f'Patient with ID {patient_id} is not assigned to staff of staff ID {staff_id}')
                 return None
             else:
                 staff = StaffUser.from_dict(s)
