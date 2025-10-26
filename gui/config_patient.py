@@ -64,36 +64,6 @@ def view_all_patients():
     else:
         st.warning("No patients found in the system.")
 
-# def view_patient_history_page():
-#     """Display the history of a specific patient."""
-#     user = st.session_state.user
-#     st.header("View Patient Full History")
-
-#     patient_id = st.text_input("Enter Patient User ID")
-
-#     if st.button("View History"):
-#         status, history = view_patient_history(patient_id, user.user_id)
-#         if status:
-#             st.subheader("Patient Details")
-#             st.write(f"**Ailment:** {history['patient_ailment']}")
-#             st.write("**Patient Logs:**")
-#             for log in history["patient_logs"]:
-#                 st.markdown(
-#                     f"- {log.get('timestamp', 'N/A')}: Mood {log.get('mood', 'N/A')}, "
-#                     f"Pain {log.get('pain_level', 'N/A')} — {log.get('notes', '')}"
-#                 )
-#             st.write("**Staff Logs:**")
-#             for staff_name, logs in history["staff_logs"].items():
-#                 st.markdown(f"**{staff_name}**")
-#                 for log in logs:
-#                     st.markdown(
-#                         f"   - Diagnosis: {log.get('diagnosis', 'N/A')}, "
-#                         f"Prescription: {log.get('prescription', 'N/A')}, "
-#                         f"Notes: {log.get('notes', '')}"
-#                     )
-#         else:
-#             st.warning(history)
-
 def view_patient_history_page():
     """Display the history of a specific patient."""
     user = st.session_state.user
@@ -146,7 +116,6 @@ def view_patient_history_page():
                 st.info("No staff logs available.")
         else:
             st.warning(history)
-
 
 def assign_staff_to_patient_form():
     """Display the form to assign staff to a patient."""
