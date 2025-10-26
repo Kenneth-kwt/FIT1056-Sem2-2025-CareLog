@@ -56,8 +56,14 @@ def view_patient_history_admin(patient_id):
             # Gather logs from assigned staff
             staff_logs = {}
             for s in staff:
-                if s.get("user_id") in p.get("assigned_staff_ids", []):
-                    staff_logs[s.get("name", "Unknown Staff")] = s.get("logs", [])
+                if s["user_id"] in p["assigned_staff_ids"]:
+                    patient_specific_logs = []
+                    #Empty list to store logs by staff specifically for patient
+                    for i in s["logs"]:
+                        if i["patient_id"] == patient_id:
+                            patient_specific_logs.append(i)
+                    staff_logs[s["name"]] = patient_specific_logs
+    #Store staff logs as "staff_name":[list of logs]
 
             # Build and assign patient history
             patient_history = {
