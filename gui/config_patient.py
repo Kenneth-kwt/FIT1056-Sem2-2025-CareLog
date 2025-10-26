@@ -17,7 +17,7 @@ def patient_register_form():
     data = load_data(CARELOG_FILE)
     next_user_id = data.get("next_user_id", 1)
 
-    st.header("🩺 Register New Patient")
+    st.header("Register New Patient")
 
     with st.form("register_form"):
         user_id = st.text_input("User ID", value=next_user_id, disabled=True)
