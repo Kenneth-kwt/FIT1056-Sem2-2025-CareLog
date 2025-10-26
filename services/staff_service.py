@@ -164,4 +164,27 @@ def view_patient_history(patient_id, staff_id):
     #If patient found, return patient ailemnt and logs as 
     return False, f"Patient with ID {patient_id} not found"
     #If patient isn't found, return None
-            
+    
+def delete_staff(user_id):
+    """
+    Delete a staff and their corresponding user account from careLog.json.
+    Returns True if deleted, False if not found.
+    """
+    # Step 1: delete the login account using existing function
+    user_deleted = delete_user(user_id)
+
+    # Step 2: remove staff record
+    data = load_data(CARELOG_FILE)
+    data = _ensure_structure(data)
+
+    staff_before = len(data["staff"])
+    data["staff"] = [s for s in data["staff"] if s["user_id"] != user_id]
+
+    staff_deleted = len(data["staff"]) != staff_before
+
+    # If either user or patient was deleted, save changes
+    if user_deleted or staff_deleted:
+        save_data(CARELOG_FILE, data)
+        return True
+
+    return False
