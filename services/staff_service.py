@@ -41,7 +41,7 @@ def add_staff_log(staff_id,patient_id= None,patient_symptoms =None,patient_log_t
         if s["user_id"] == staff_id:
             #Find the staff 
 
-            for i,p in enumerate(patient):
+            for ip,p in enumerate(patient):
                 if p["user_id"] == patient_id:
                     found_patient_id = p["user_id"]
             if found_patient_id not in s["assigned_patient_ids"]:
