@@ -30,9 +30,8 @@ def assign_staff_to_patient(patient_id, staff_id):
                     if patient_id not in s["assigned_patient_ids"]:
                         s["assigned_patient_ids"].append(patient_id)
                     data["staff"][i] = s
-                    break
-            save_data(CARELOG_FILE, data)
-            return True
+                    save_data(CARELOG_FILE, data)
+                    return True
 
     return False  # Patient not found
 
