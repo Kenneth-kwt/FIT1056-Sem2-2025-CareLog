@@ -4,12 +4,14 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from services.patient_service import register_patient, add_patient_log, delete_patient
-from services.staff_service import register_staff,delete_staff,add_staff_log,view_patient_history
+from services.staff_service import register_staff,delete_staff,add_staff_log,view_patient_history, register_staff, add_staff_log, find_patient_logs
+from services.admin_service import assign_staff_to_patient
+from services.user_service import delete_user, login
 from services.admin_service import assign_staff_to_patient
 
 @pytest.fixture
-
-def test_patient_services():
+# def test_patient_services():
+def test_register_patient():
     # Register a new patient
     patient = register_patient("123", "pass123", "Test Patient", 30, "Other", "Male", "None")
     assert patient is not None
@@ -29,41 +31,65 @@ def test_patient_services():
     assert len(patient.logs) > 0
     assert patient.logs[0]["mood"] == "Happy"
 
+
+def test_delete_user():
+    # Delete the patient
+    result = delete_user("123")
+    assert result is True
+
+def test_register_staff():
+    # Register a new staff member
+    staff = register_staff("200", "staffpass", "General", "Dr. Smith")
+    assert staff is not None
+    assert staff.user_id == "200"
+
+def test_assign_staff_to_patient():
+    # Register a new staff member
+    staff = register_staff("200", "staffpass", "General", "Dr. Smith")
+
+    # Register a new patient
+    patient = register_patient("300", "patientpass", "Patient X", 40, "Female", "Diabetes", "None")
+
+    # Assign staff to patient
+    result = assign_staff_to_patient("300", "200")
+    assert result is True
+
+def test_view_patient_history():
+    patient = register_patient("456", "pass123", "Test Patient", 30, "Other", "Male", "None")
+    add_patient_log("456", "Happy", 2, "Feeling better")
     # View patient history (should contain the log just added)
-    history = view_patient_history("123","345")
+    bool, history = view_patient_history("456", "200")
+    assert bool is False
+    
+    assign_staff_to_patient("456", "200")
+    bool, history = view_patient_history("456", "200")
+    assert bool is True
     assert len(history["patient_logs"]) > 0
     assert history["patient_logs"][0]["mood"] == "Happy"
 
-    # Delete the patient
-    result = delete_patient("123")
-    assert result is True
+def test_add_staff_log():
+    # Register a new patient
+    patient = register_patient("555", "pass123", "Test Patient", 30, "Other", "Male", "None")
+    # Add a log entry for the staff member regarding a patient
+    staff = add_staff_log(
+        staff_id="200",
+        patient_id="555",
+        patient_symptoms="Cough, Fever",
+        diagnosis="Flu",
+        prescription="Rest, Hydration",
+        notes="Patient should recover in a week."
+    )
+    assert staff is None
 
-def test_staff_services():
-    #Register a new staff
-    staff = register_staff("345","staffpassword", "Test speciality","Test Staff")
+    assign_staff_to_patient("555", "200")
+    staff = add_staff_log(
+        staff_id="200",
+        patient_id="555",
+        patient_symptoms="Cough, Fever",
+        diagnosis="Flu",
+        prescription="Rest, Hydration",
+        notes="Patient should recover in a week."
+    )
     assert staff is not None
-    assert staff.user_id == "345"
-
-    #Attempt to register same staff again(should fail)
-    staff_dup = register_staff("345","diff pass","Test speciality" ,"Test Staff 2")
-    #Duplicate registration should fail
-    assert staff_dup is None 
-
-    patient = register_patient("123", "pass123", "Test Patient", 30,"Male", "Other", "None")
-    #register_patient:user_id, password, name, age, gender, ailment, culture_and_religion
-    assigned = assign_staff_to_patient("123","345")
-    patient = add_patient_log("123", "Happy", 2, "Feeling better")
-    #Add_patient_log :user_id, mood=None, pain_level=None, notes=None, sensitive_information=False
-    added_log = add_staff_log("123","Projectile Diarrhea",)
-    #staff_id,patient_id= None,patient_symptoms =None,patient_log_timestamp=None,
-    # diagnosis = None,prescription = None,notes = None,patient_logs = None
-
-
-    
-
-
-
-
-
-
-
+    assert len(staff.logs) > 0
+    assert staff.logs[0]["diagnosis"] == "Flu"
