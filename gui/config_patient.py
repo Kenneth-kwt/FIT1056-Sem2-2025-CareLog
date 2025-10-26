@@ -76,21 +76,44 @@ def view_patient_history_page():
         if status:
             st.subheader("Patient Details")
             st.write(f"**Ailment:** {history['patient_ailment']}")
-            st.write("**Patient Logs:**")
-            for log in history["patient_logs"]:
-                st.markdown(
-                    f"- {log.get('timestamp', 'N/A')}: Mood {log.get('mood', 'N/A')}, "
-                    f"Pain {log.get('pain_level', 'N/A')} — {log.get('notes', '')}"
-                )
-            st.write("**Staff Logs:**")
-            for staff_name, logs in history["staff_logs"].items():
-                st.markdown(f"**{staff_name}**")
-                for log in logs:
-                    st.markdown(
-                        f"   - Diagnosis: {log.get('diagnosis', 'N/A')}, "
-                        f"Prescription: {log.get('prescription', 'N/A')}, "
-                        f"Notes: {log.get('notes', '')}"
-                    )
+
+            # --- Patient Logs ---
+            st.write("### Patient Logs")
+            patient_logs = history.get("patient_logs", [])
+            if patient_logs:
+                for log in patient_logs:
+                    timestamp = log.get('timestamp', 'N/A')
+                    sensitive = log.get("sensitive_information", False)
+                    expander_label = f"{'Sensitive Log - ' if sensitive else ''}{timestamp}"
+
+                    with st.expander(expander_label, expanded=False):
+                        if sensitive:
+                            st.warning("This entry contains sensitive information. Viewer discretion is advised.")
+                        st.markdown(
+                            f"- Mood: {log.get('mood', 'N/A')} | "
+                            f"Pain: {log.get('pain_level', 'N/A')} | "
+                            f"Notes: {log.get('notes', '')}"
+                        )
+            else:
+                st.info("No patient logs available.")
+
+            # --- Staff Logs ---
+            st.write("### Staff Logs")
+            staff_logs = history.get("staff_logs", {})
+            if staff_logs:
+                for staff_name, logs in staff_logs.items():
+                    with st.expander(f"Logs by {staff_name}", expanded=False):
+                        if logs:
+                            for log in logs:
+                                st.markdown(
+                                    f"- **Diagnosis:** {log.get('diagnosis', 'N/A')}  \n"
+                                    f"  **Prescription:** {log.get('prescription', 'N/A')}  \n"
+                                    f"  **Notes:** {log.get('notes', '')}"
+                                )
+                        else:
+                            st.write("_No logs recorded by this staff member._")
+            else:
+                st.info("No staff logs available.")
         else:
             st.warning(history)
 
@@ -126,7 +149,6 @@ def payment_form():
         notes = st.text_area("Notes (optional)", placeholder="E.g. paying for MRI scan")
 
         submitted = st.form_submit_button("Submit Payment")
-
         if submitted:
             if amount <= 0:
                 st.error("Please enter a valid payment amount.")
@@ -198,12 +220,18 @@ def view_patient_history_admin_page():
             patient_logs = history.get("patient_logs", [])
             if patient_logs:
                 for log in patient_logs:
-                    st.markdown(
-                        f"- **{log.get('timestamp', 'N/A')}** | "
-                        f"Mood: {log.get('mood', 'N/A')} | "
-                        f"Pain: {log.get('pain_level', 'N/A')}  \n"
-                        f"Notes: {log.get('notes', '')}"
-                    )
+                    timestamp = log.get('timestamp', 'N/A')
+                    sensitive = log.get("sensitive_information", False)
+                    expander_label = f"{'Sensitive Log - ' if sensitive else ''}{timestamp}"
+
+                    with st.expander(expander_label, expanded=False):
+                        if sensitive:
+                            st.warning("This log contains sensitive information.")
+                        st.markdown(
+                            f"- Mood: {log.get('mood', 'N/A')} | "
+                            f"Pain: {log.get('pain_level', 'N/A')} | "
+                            f"Notes: {log.get('notes', '')}"
+                        )
             else:
                 st.info("No patient logs available.")
 
@@ -226,4 +254,3 @@ def view_patient_history_admin_page():
                 st.info("No staff logs available.")
         else:
             st.warning(history)
-
