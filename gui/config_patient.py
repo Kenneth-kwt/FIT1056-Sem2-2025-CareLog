@@ -136,3 +136,32 @@ def payment_form():
                     st.success(f"Payment of RM{amount:.2f} via {method} was successful!")
                 else:
                     st.error("Payment failed. Patient record not found.")
+
+def view_billing_history():
+    """Display billing/payment history for all patients (admin/staff access)."""
+    st.header("View All Patients' Billing History")
+
+    data = load_data(CARELOG_FILE)
+    patients = data.get("patients", [])
+
+    if not patients:
+        st.warning("No patient records found.")
+        return
+
+    has_any_billing = False
+    for patient in patients:
+        billing_records = patient.get("bills", [])
+
+        if billing_records:
+            has_any_billing = True
+            with st.expander(f"{patient.get('name', 'Unknown')} (User ID: {patient.get('user_id')})"):
+                for i, record in enumerate(billing_records, start=1):
+                    st.markdown(f"**Payment {i}:**")
+                    st.write(f"- **Amount:** RM {record.get('amount', 'N/A')}")
+                    st.write(f"- **Method:** {record.get('method', 'N/A')}")
+                    st.write(f"- **Notes:** {record.get('notes', '-')}")
+                    st.write(f"- **Timestamp:** {record.get('timestamp', 'N/A')}")
+                    st.markdown("---")
+
+    if not has_any_billing:
+        st.info("No billing records have been added yet.")

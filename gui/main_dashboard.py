@@ -14,7 +14,8 @@ from gui.config_patient import (
     view_all_patients,
     view_patient_history_page,
     assign_staff_to_patient_form,
-    payment_form
+    payment_form,
+    view_billing_history
 )
 from gui.config_general import delete_user_form
 from gui.config_staff import register_staff_form
@@ -51,9 +52,9 @@ def launch():
             "Register Staff",
             "Delete User",
             "View All Patients",
-            "Add Staff Log",
             "View Patient History",
-            "Assign Staff to Patient"
+            "Assign Staff to Patient",
+            "View Billing History"
         ]
     elif user.role == "staff":
         pages = ["Add Staff Log", "View Patient History"]
@@ -167,3 +168,7 @@ def launch():
 
     elif page=="Payment Form":
         payment_form()
+    
+    elif page == "View Billing History":
+        view_billing_history()
+

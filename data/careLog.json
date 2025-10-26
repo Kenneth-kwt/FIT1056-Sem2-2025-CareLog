@@ -19,6 +19,11 @@
             "user_id": "2",
             "password": "Hoh",
             "role": "patient"
+        },
+        {
+            "user_id": "3",
+            "password": "ZZZ",
+            "role": "patient"
         }
     ],
     "patients": [
@@ -33,9 +38,29 @@
             "culture_and_religion": "Chinese",
             "assigned_staff_ids": [],
             "logs": [],
+            "bills": [
+                {
+                    "amount": 1001.0,
+                    "method": "Credit Card",
+                    "notes": "MRI",
+                    "timestamp": "2025-10-26 16:20:36"
+                }
+            ]
+        },
+        {
+            "user_id": "3",
+            "password": "ZZZ",
+            "role": "patient",
+            "name": "Zoo",
+            "age": 30,
+            "gender": "Female",
+            "ailment": "Pain",
+            "culture_and_religion": "Indian",
+            "assigned_staff_ids": [],
+            "logs": [],
             "bills": []
         }
     ],
     "staff": [],
-    "next_user_id": 3
+    "next_user_id": 4
 }

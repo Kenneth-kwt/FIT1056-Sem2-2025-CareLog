@@ -55,7 +55,8 @@ class PatientUser(User):
         bill={
             "amount":amount,
             "method":method,
-            "notes":notes or "No notes"
+            "notes":notes or "No notes",
+            "timestamp":time.strftime("%Y-%m-%d %H:%M:%S")
         }
         if bill:
             self.bills.append(bill)
