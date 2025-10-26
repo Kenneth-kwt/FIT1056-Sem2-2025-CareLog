@@ -36,32 +36,84 @@ def assign_staff_to_patient(patient_id, staff_id):
 
     return False  # Patient not found
 
-def view_patient_history_admin(patient_id,admin_id):
-    """View patients logs based on patient ID, but for admins"""
+# def view_patient_history_admin(patient_id, admin_id):
+#     """View patient's logs based on patient ID (for admins)."""
+#     data = load_data(CARELOG_FILE)
+#     data = _ensure_structure(data)
+
+#     patients = data.get("patients", [])
+#     staff = data.get("staff", [])
+
+#     # Default to None (for clarity)
+#     patient_history = None
+
+#     # Find the patient
+#     for p in patients:
+#         if p.get("user_id") == patient_id:
+#             patient_logs = p.get("logs", [])
+#             patient_ailment = p.get("ailment", "Unknown")
+
+#             # Gather logs from assigned staff
+#             staff_logs = {}
+#             for s in staff:
+#                 if s.get("user_id") in p.get("assigned_staff_ids", []):
+#                     staff_logs[s.get("name", "Unknown Staff")] = s.get("logs", [])
+
+#             # Build and assign patient history
+#             patient_history = {
+#                 "patient_ailment": patient_ailment,
+#                 "patient_logs": patient_logs,
+#                 "staff_logs": staff_logs
+#             }
+
+#             break
+
+#     # Return safely
+#     if patient_history is not None:
+#         return True, patient_history
+#     else:
+#         return False, f"Patient with ID {patient_id} was not found"
+    
+def view_patient_history_admin(patient_id):
+    """View patient's logs based on patient ID (for admins)."""
     data = load_data(CARELOG_FILE)
-    patients = data.get("patients",[])
-    staff = data.get("staff",[])
-    admins = data.get("admins",[])
-    admin_exists = False
-    patient_logs,patient_ailment = None
-    staff_logs = {}
-    #Dictionary to hold staff logs on patient
-    for a in admins:
-        if a["user_id"] == admin_id:
-            admin_exists = True
+    data = _ensure_structure(data)
+
+    patients = data.get("patients", [])
+    staff = data.get("staff", [])
+
+    # Default to None (for clarity)
+    patient_history = None
+
+    # Find the patient
     for p in patients:
-        if p["user_id"] == patient_id:
-            patient_logs = p["logs"]
-            patient_ailment = p["ailment"]
+        if p.get("user_id") == patient_id:
+            patient_logs = p.get("logs", [])
+            patient_ailment = p.get("ailment", "Unknown")
+
+            # Gather logs from assigned staff
+            staff_logs = {}
             for s in staff:
                 if s["user_id"] in p["assigned_staff_ids"]:
-                    staff_logs[s["name"]] = s["logs"]
-            if admin_exists:
-                patient_history = {'patient_ailment': patient_ailment,'patient_logs':patient_logs, 'staff_logs':staff_logs}
-                return True, patient_history
-            else:
-                return False, f"Admin with ID {admin_id} was not found"
-    return False,f"Patient with ID {patient_id} was not found"
-                    
-            
-    
+                    patient_specific_logs = []
+                    #Empty list to store logs by staff specifically for patient
+                    for i in s["logs"]:
+                        if i["patient_id"] == patient_id:
+                            patient_specific_logs.append(i)
+                    staff_logs[s["name"]] = patient_specific_logs
+    #Store staff logs as "staff_name":[list of logs]
+
+            # Build and assign patient history
+            patient_history = {
+                "patient_ailment": patient_ailment,
+                "patient_logs": patient_logs,
+                "staff_logs": staff_logs
+            }
+
+            break
+
+    # Return safely
+    if patient_history is not None:
+        return True, patient_history
+    else:
+        return False, f"Patient with ID {patient_id} was not found"
