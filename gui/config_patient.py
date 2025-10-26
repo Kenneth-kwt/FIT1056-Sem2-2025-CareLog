@@ -64,6 +64,36 @@ def view_all_patients():
     else:
         st.warning("No patients found in the system.")
 
+# def view_patient_history_page():
+#     """Display the history of a specific patient."""
+#     user = st.session_state.user
+#     st.header("View Patient Full History")
+
+#     patient_id = st.text_input("Enter Patient User ID")
+
+#     if st.button("View History"):
+#         status, history = view_patient_history(patient_id, user.user_id)
+#         if status:
+#             st.subheader("Patient Details")
+#             st.write(f"**Ailment:** {history['patient_ailment']}")
+#             st.write("**Patient Logs:**")
+#             for log in history["patient_logs"]:
+#                 st.markdown(
+#                     f"- {log.get('timestamp', 'N/A')}: Mood {log.get('mood', 'N/A')}, "
+#                     f"Pain {log.get('pain_level', 'N/A')} — {log.get('notes', '')}"
+#                 )
+#             st.write("**Staff Logs:**")
+#             for staff_name, logs in history["staff_logs"].items():
+#                 st.markdown(f"**{staff_name}**")
+#                 for log in logs:
+#                     st.markdown(
+#                         f"   - Diagnosis: {log.get('diagnosis', 'N/A')}, "
+#                         f"Prescription: {log.get('prescription', 'N/A')}, "
+#                         f"Notes: {log.get('notes', '')}"
+#                     )
+#         else:
+#             st.warning(history)
+
 def view_patient_history_page():
     """Display the history of a specific patient."""
     user = st.session_state.user
@@ -78,10 +108,21 @@ def view_patient_history_page():
             st.write(f"**Ailment:** {history['patient_ailment']}")
             st.write("**Patient Logs:**")
             for log in history["patient_logs"]:
-                st.markdown(
-                    f"- {log.get('timestamp', 'N/A')}: Mood {log.get('mood', 'N/A')}, "
-                    f"Pain {log.get('pain_level', 'N/A')} — {log.get('notes', '')}"
-                )
+                is_sensitive = log.get("sensitive_information", False)
+                if is_sensitive:
+                    with st.expander(f"Sensitive Log from {log.get('timestamp', 'N/A')}", expanded=False):
+                        st.warning("This entry contains sensitive information. Viewer discretion is advised.")
+                        if st.button(f"View Sensitive Content ({log.get('timestamp', 'N/A')})", key=f"sensitive_{log.get('timestamp', '')}"):
+                            st.markdown(
+                                f"- Mood: {log.get('mood', 'N/A')}, "
+                                f"Pain: {log.get('pain_level', 'N/A')} — {log.get('notes', '')}"
+                            )
+                else:
+                    st.markdown(
+                        f"- {log.get('timestamp', 'N/A')}: Mood {log.get('mood', 'N/A')}, "
+                        f"Pain {log.get('pain_level', 'N/A')} — {log.get('notes', '')}"
+                    )
+
             st.write("**Staff Logs:**")
             for staff_name, logs in history["staff_logs"].items():
                 st.markdown(f"**{staff_name}**")
@@ -166,8 +207,69 @@ def view_billing_history():
     if not has_any_billing:
         st.info("No billing records have been added yet.")
 
+# def view_patient_history_admin_page():
+#     """Display a patient's full history for admins, with dropdown patient selection."""
+#     user = st.session_state.user
+#     st.header("View Patient Full History (Admin Access)")
+
+#     # Load patient data for dropdown
+#     data = load_data(CARELOG_FILE)
+#     patients = data.get("patients", [])
+
+#     if not patients:
+#         st.warning("No patients found in the system.")
+#         return
+
+#     # Build a list of options like "John Doe (P001)"
+#     patient_options = [f"{p['name']} ({p['user_id']})" for p in patients]
+#     selected_patient = st.selectbox("Select a Patient", patient_options)
+
+#     # Extract patient_id from selection
+#     patient_id = selected_patient.split("(")[-1].replace(")", "").strip()
+
+#     if st.button("View History"):
+#         status, history = view_patient_history_admin(patient_id)
+
+#         if status:
+#             st.subheader("Patient Details")
+#             st.write(f"**Ailment:** {history['patient_ailment']}")
+
+#             # --- Patient Logs ---
+#             st.write("### Patient Logs")
+#             patient_logs = history.get("patient_logs", [])
+#             if patient_logs:
+#                 for log in patient_logs:
+#                     st.markdown(
+#                         f"- **{log.get('timestamp', 'N/A')}** | "
+#                         f"Mood: {log.get('mood', 'N/A')} | "
+#                         f"Pain: {log.get('pain_level', 'N/A')}  \n"
+#                         f"Notes: {log.get('notes', '')}"
+#                     )
+#             else:
+#                 st.info("No patient logs available.")
+
+#             # --- Staff Logs ---
+#             st.write("### Staff Logs")
+#             staff_logs = history.get("staff_logs", {})
+#             if staff_logs:
+#                 for staff_name, logs in staff_logs.items():
+#                     with st.expander(f"Logs by {staff_name}", expanded=False):
+#                         if logs:
+#                             for log in logs:
+#                                 st.markdown(
+#                                     f"- **Diagnosis:** {log.get('diagnosis', 'N/A')}  \n"
+#                                     f"  **Prescription:** {log.get('prescription', 'N/A')}  \n"
+#                                     f"  **Notes:** {log.get('notes', '')}"
+#                                 )
+#                         else:
+#                             st.write("_No logs recorded by this staff member._")
+#             else:
+#                 st.info("No staff logs available.")
+#         else:
+#             st.warning(history)
+
 def view_patient_history_admin_page():
-    """Display a patient's full history for admins, with dropdown patient selection."""
+    """Display a patient's full history for admins, with dropdown patient selection and sensitive log warning."""
     user = st.session_state.user
     st.header("View Patient Full History (Admin Access)")
 
@@ -197,13 +299,28 @@ def view_patient_history_admin_page():
             st.write("### Patient Logs")
             patient_logs = history.get("patient_logs", [])
             if patient_logs:
-                for log in patient_logs:
-                    st.markdown(
-                        f"- **{log.get('timestamp', 'N/A')}** | "
-                        f"Mood: {log.get('mood', 'N/A')} | "
-                        f"Pain: {log.get('pain_level', 'N/A')}  \n"
-                        f"Notes: {log.get('notes', '')}"
-                    )
+                for idx, log in enumerate(patient_logs):
+                    timestamp = log.get('timestamp', 'N/A')
+                    sensitive = log.get("sensitive_information", False)
+
+                    if sensitive:
+                        with st.expander(f"Sensitive Log - {timestamp}"):
+                            st.warning("This log contains sensitive information.")
+                            # Checkbox to reveal sensitive content
+                            key = f"sensitive_{patient_id}_{idx}"
+                            reveal = st.checkbox("Reveal sensitive content", key=key)
+                            if reveal:
+                                st.markdown(
+                                    f"- Mood: {log.get('mood', 'N/A')} | "
+                                    f"Pain: {log.get('pain_level', 'N/A')} | "
+                                    f"Notes: {log.get('notes', '')}"
+                                )
+                    else:
+                        st.markdown(
+                            f"- **{timestamp}** | Mood: {log.get('mood', 'N/A')} | "
+                            f"Pain: {log.get('pain_level', 'N/A')} | "
+                            f"Notes: {log.get('notes', '')}"
+                        )
             else:
                 st.info("No patient logs available.")
 
@@ -226,4 +343,3 @@ def view_patient_history_admin_page():
                 st.info("No staff logs available.")
         else:
             st.warning(history)
-
