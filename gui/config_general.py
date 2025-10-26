@@ -9,7 +9,7 @@ from services.user_service import delete_user
 
 def delete_user_form():
     """Display the user deletion form and handle submission."""
-    st.header("🗑️ Delete User Record")
+    st.header("Delete User Record")
 
     user_id = st.text_input("Enter User ID to delete")
     if st.button("Delete User"):
