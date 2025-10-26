@@ -55,7 +55,7 @@ def register_patient(user_id, password, name, age, gender, ailment, culture_and_
 
     return new_patient
 
-def delete_patient(user_id: str) -> bool:
+def delete_patient(user_id):
     """
     Delete a patient and their corresponding user account from careLog.json.
     Returns True if deleted, False if not found.

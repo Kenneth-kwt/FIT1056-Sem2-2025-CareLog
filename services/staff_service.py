@@ -46,13 +46,10 @@ def add_staff_log(staff_id,patient_id= None,patient_symptoms =None,patient_log_t
                     found_patient_id = p["user_id"]
             if found_patient_id not in s["assigned_patient_ids"]:
                 #If patient is not assigned to staff:
-                
-                print(f'Patient with ID {patient_id} is not assinged to staff of staff ID {staff_id}')
                 return None
             else:
                 staff = StaffUser.from_dict(s)
-                #Create StaffUser object from dic
-                # t
+                #Create StaffUser object from dict
                 staff.add_log(patient_id= patient_id,patient_symptoms =patient_symptoms,
                               patient_log_timestamp=patient_log_timestamp,
                               diagnosis = diagnosis,
@@ -113,4 +110,27 @@ def view_patient_history(patient_id, staff_id):
     #If patient found, return patient ailemnt and logs as 
     return False, f"Patient with ID {patient_id} not found"
     #If patient isn't found, return None
-            
+    
+def delete_staff(user_id):
+    """
+    Delete a staff and their corresponding user account from careLog.json.
+    Returns True if deleted, False if not found.
+    """
+    # Step 1: delete the login account using existing function
+    user_deleted = delete_user(user_id)
+
+    # Step 2: remove staff record
+    data = load_data(CARELOG_FILE)
+    data = _ensure_structure(data)
+
+    staff_before = len(data["staff"])
+    data["staff"] = [s for s in data["staff"] if s["user_id"] != user_id]
+
+    staff_deleted = len(data["staff"]) != staff_before
+
+    # If either user or patient was deleted, save changes
+    if user_deleted or staff_deleted:
+        save_data(CARELOG_FILE, data)
+        return True
+
+    return False

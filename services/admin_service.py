@@ -36,3 +36,32 @@ def assign_staff_to_patient(patient_id, staff_id):
 
     return False  # Patient not found
 
+def view_patient_history_admin(patient_id,admin_id):
+    """View patients logs based on patient ID, but for admins"""
+    data = load_data(CARELOG_FILE)
+    patients = data.get("patients",[])
+    staff = data.get("staff",[])
+    admins = data.get("admins",[])
+    admin_exists = False
+    patient_logs,patient_ailment = None
+    staff_logs = {}
+    #Dictionary to hold staff logs on patient
+    for a in admins:
+        if a["user_id"] == admin_id:
+            admin_exists = True
+    for p in patients:
+        if p["user_id"] == patient_id:
+            patient_logs = p["logs"]
+            patient_ailment = p["ailment"]
+            for s in staff:
+                if s["user_id"] in p["assigned_staff_ids"]:
+                    staff_logs[s["name"]] = s["logs"]
+            if admin_exists:
+                patient_history = {'patient_ailment': patient_ailment,'patient_logs':patient_logs, 'staff_logs':staff_logs}
+                return True, patient_history
+            else:
+                return False, f"Admin with ID {admin_id} was not found"
+    return False,f"Patient with ID {patient_id} was not found"
+                    
+            
+    
