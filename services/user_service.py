@@ -60,7 +60,8 @@ def add_user(user_id, password, role):
 
     if any(u["user_id"] == user_id for u in data["users"]):
         return None  # already exists
-
+    elif role not in ["admin", "staff", "patient"]:
+        return None  # invalid role
     user = User(user_id, password, role)
     data["users"].append(user.to_dict())
     save_data(CARELOG_FILE, data)

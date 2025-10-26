@@ -31,43 +31,94 @@ def register_staff(user_id, password, speciality, name):
 
     return new_staff
 
-def add_staff_log(staff_id,patient_id= None,patient_symptoms =None,patient_log_timestamp=None,diagnosis = None,prescription = None,notes = None,patient_logs = None):
+# def add_staff_log(staff_id,patient_id= None,patient_symptoms =None,patient_log_timestamp=None,diagnosis = None,prescription = None,notes = None,patient_logs = None):
+#     data = load_data(CARELOG_FILE)
+#     data = _ensure_structure(data)
+#     staffs = data.get("staff",[])
+#     patient = data.get("patients", [])
+#     found_patient_id = None
+#     for i,s in enumerate(staffs):
+#         if s["user_id"] == staff_id:
+#             #Find the staff 
+
+#             for i,p in enumerate(patient):
+#                 if p["user_id"] == patient_id:
+#                     found_patient_id = p["user_id"]
+#             if found_patient_id not in s["assigned_patient_ids"]:
+#                 #If patient is not assigned to staff:
+#                 return None
+#             else:
+#                 staff = StaffUser.from_dict(s)
+#                 #Create StaffUser object from dict
+#                 staff.add_log(patient_id= patient_id,patient_symptoms =patient_symptoms,
+#                               patient_log_timestamp=patient_log_timestamp,
+#                               diagnosis = diagnosis,
+#                               prescription = prescription,
+#                               notes = notes,
+#                               patient_logs = patient_logs)
+#                 #Create a new log
+
+#                 data["staff"][i] = staff.to_dict()
+#                 #Store updated staff back into the careLog json file
+
+#                 save_data(CARELOG_FILE,data)
+#                 return staff
+#     return None
+#     #If staff ID isnt found in staff, return none
+
+def add_staff_log(
+    staff_id,
+    patient_id=None,
+    patient_symptoms=None,
+    patient_log_timestamp=None,
+    diagnosis=None,
+    prescription=None,
+    notes=None,
+    patient_logs=None
+):
     data = load_data(CARELOG_FILE)
     data = _ensure_structure(data)
-    staffs = data.get("staff",[])
-    patient = data.get("patients", [])
-    found_patient_id = None
-    for i,s in enumerate(staffs):
-        if s["user_id"] == staff_id:
-            #Find the staff 
+    staffs = data.get("staff", [])
+    patients = data.get("patients", [])
 
-            for i,p in enumerate(patient):
+    found_patient_id = None
+
+    for staff_index, s in enumerate(staffs):
+        if s["user_id"] == staff_id:
+            # Find the patient by ID
+            for p in patients:
                 if p["user_id"] == patient_id:
                     found_patient_id = p["user_id"]
-            if found_patient_id not in s["assigned_patient_ids"]:
-                #If patient is not assigned to staff:
-                
-                print(f'Patient with ID {patient_id} is not assinged to staff of staff ID {staff_id}')
+                    break  # ✅ stop once found
+
+            if found_patient_id is None:
+                return None  # Patient not found at all
+
+            if found_patient_id not in s.get("assigned_patient_ids", []):
+                # If patient is not assigned to this staff
                 return None
-            else:
-                staff = StaffUser.from_dict(s)
-                #Create StaffUser object from dic
-                # t
-                staff.add_log(patient_id= patient_id,patient_symptoms =patient_symptoms,
-                              patient_log_timestamp=patient_log_timestamp,
-                              diagnosis = diagnosis,
-                              prescription = prescription,
-                              notes = notes,
-                              patient_logs = patient_logs)
-                #Create a new log
 
-                data["staff"][i] = staff.to_dict()
-                #Store updated staff back into the careLog json file
+            # Create a StaffUser object and add log
+            staff = StaffUser.from_dict(s)
+            staff.add_log(
+                patient_id=patient_id,
+                patient_symptoms=patient_symptoms,
+                patient_log_timestamp=patient_log_timestamp,
+                diagnosis=diagnosis,
+                prescription=prescription,
+                notes=notes,
+                patient_logs=patient_logs
+            )
 
-                save_data(CARELOG_FILE,data)
-                return staff
+            # ✅ Use the correct staff_index (not overridden)
+            data["staff"][staff_index] = staff.to_dict()
+
+            save_data(CARELOG_FILE, data)
+            return staff
+
+    # If staff not found
     return None
-    #If staff ID isnt found in staff, return none
+
 
 def find_patient_logs(patient_id,timestamp):
     """Find patients log based on patient ID and timestamp"""
@@ -113,4 +164,27 @@ def view_patient_history(patient_id, staff_id):
     #If patient found, return patient ailemnt and logs as 
     return False, f"Patient with ID {patient_id} not found"
     #If patient isn't found, return None
-            
+    
+def delete_staff(user_id):
+    """
+    Delete a staff and their corresponding user account from careLog.json.
+    Returns True if deleted, False if not found.
+    """
+    # Step 1: delete the login account using existing function
+    user_deleted = delete_user(user_id)
+
+    # Step 2: remove staff record
+    data = load_data(CARELOG_FILE)
+    data = _ensure_structure(data)
+
+    staff_before = len(data["staff"])
+    data["staff"] = [s for s in data["staff"] if s["user_id"] != user_id]
+
+    staff_deleted = len(data["staff"]) != staff_before
+
+    # If either user or patient was deleted, save changes
+    if user_deleted or staff_deleted:
+        save_data(CARELOG_FILE, data)
+        return True
+
+    return False

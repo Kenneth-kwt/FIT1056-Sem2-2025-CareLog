@@ -55,7 +55,7 @@ def register_patient(user_id, password, name, age, gender, ailment, culture_and_
 
     return new_patient
 
-def delete_patient(user_id: str) -> bool:
+def delete_patient(user_id):
     """
     Delete a patient and their corresponding user account from careLog.json.
     Returns True if deleted, False if not found.
@@ -78,3 +78,19 @@ def delete_patient(user_id: str) -> bool:
         return True
 
     return False
+
+def patient_bill(user_id,amount,method,notes=None):
+    """
+    Pay medical bills as a patient
+    """
+    data = load_data(CARELOG_FILE)
+    data = _ensure_structure(data)
+    patients = data.get("patients", [])
+    for i, p in enumerate(patients):
+        if p["user_id"] == user_id:
+            patient = PatientUser.from_dict(p)
+            patient.pay_bills(amount,method,notes)
+            data["patients"][i] = patient.to_dict()
+            save_data(CARELOG_FILE, data)
+            return patient
+    return None

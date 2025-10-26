@@ -29,7 +29,7 @@ def register_staff_form():
             if not user_id or not password or not name or not speciality:
                 st.error("All fields are required.")
             else:
-                staff = register_staff(user_id, password, name, speciality)
+                staff = register_staff(user_id, password,speciality,name)
             if staff:
                 st.success(f"Staff '{name}' registered successfully!")
             else:

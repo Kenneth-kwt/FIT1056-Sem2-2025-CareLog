@@ -16,103 +16,87 @@
             "role": "admin"
         },
         {
-            "user_id": "1",
-            "password": "staff",
-            "role": "staff"
-        },
-        {
             "user_id": "2",
-            "password": "patient",
+            "password": "Hoh",
             "role": "patient"
         },
         {
             "user_id": "3",
-            "password": "333",
+            "password": "ZZZ",
             "role": "patient"
         },
         {
             "user_id": "4",
-            "password": "staff",
+            "password": "doc",
             "role": "staff"
         }
     ],
     "patients": [
         {
             "user_id": "2",
-            "password": "patient",
+            "password": "Hoh",
             "role": "patient",
-            "name": "PatientABC",
-            "age": 15,
+            "name": "Ryan Hoh",
+            "age": 20,
             "gender": "Male",
-            "ailment": "",
-            "culture_and_religion": "",
-            "assigned_staff_ids": [
-                "1"
-            ],
-            "logs": []
-        },
-        {
-            "user_id": "3",
-            "password": "333",
-            "role": "patient",
-            "name": "33",
-            "age": 12,
-            "gender": "Male",
-            "ailment": "",
-            "culture_and_religion": "",
+            "ailment": "Headache",
+            "culture_and_religion": "Chinese",
             "assigned_staff_ids": [
                 "4"
             ],
-            "logs": [
+            "logs": [],
+            "bills": [
                 {
-                    "mood": "happy",
-                    "pain_level": 9,
-                    "notes": "it's painful",
-                    "timestamp": "2025-10-06 18:48:32",
-                    "sensitive_information": true
+                    "amount": 1001.0,
+                    "method": "Credit Card",
+                    "notes": "MRI",
+                    "timestamp": "2025-10-26 16:20:36"
+                }
+            ]
+        },
+        {
+            "user_id": "3",
+            "password": "ZZZ",
+            "role": "patient",
+            "name": "Zoo",
+            "age": 30,
+            "gender": "Female",
+            "ailment": "Pain",
+            "culture_and_religion": "Indian",
+            "assigned_staff_ids": [
+                "4"
+            ],
+            "logs": [],
+            "bills": [
+                {
+                    "amount": 200.0,
+                    "method": "Debit Card",
+                    "notes": "Medicine",
+                    "timestamp": "2025-10-26 17:00:12"
                 }
             ]
         }
     ],
     "staff": [
         {
-            "user_id": "1",
-            "password": "staff",
-            "role": "staff",
-            "name": "Doctor",
-            "speciality": "Testing",
-            "assigned_patient_ids": [
-                "2"
-            ],
-            "logs": []
-        },
-        {
             "user_id": "4",
-            "password": "staff",
+            "password": "doc",
             "role": "staff",
-            "name": "doctor",
-            "speciality": "staff",
+            "name": "Doctor Loo",
+            "speciality": "Doctor",
             "assigned_patient_ids": [
+                "2",
                 "3"
             ],
             "logs": [
                 {
-                    "patient_id": "3",
-                    "patient_symptoms": "44444",
+                    "patient_id": "2",
+                    "patient_symptoms": "Vomit",
                     "patient_log_timestamp": "",
-                    "diagnosis": "",
-                    "prescription": "",
-                    "notes": "",
-                    "staff_log_timestamp": "2025-10-06 18:58:43"
-                },
-                {
-                    "patient_id": "3",
-                    "patient_symptoms": "fsfsf",
-                    "patient_log_timestamp": "",
-                    "diagnosis": "",
-                    "prescription": "",
-                    "notes": "",
-                    "staff_log_timestamp": "2025-10-06 18:59:21"
+                    "diagnosis": "Food Poisoning",
+                    "prescription": "Charcoal",
+                    "notes": "Replenish Water",
+                    "staff_log_timestamp": "2025-10-26 17:30:35"
                 }
             ]
         }

@@ -13,7 +13,10 @@ from gui.config_patient import (
     patient_register_form,
     view_all_patients,
     view_patient_history_page,
-    assign_staff_to_patient_form
+    assign_staff_to_patient_form,
+    payment_form,
+    view_billing_history,
+    view_patient_history_admin_page
 )
 from gui.config_general import delete_user_form
 from gui.config_staff import register_staff_form
@@ -50,14 +53,14 @@ def launch():
             "Register Staff",
             "Delete User",
             "View All Patients",
-            "Add Staff Log",
-            "View Patient History",
-            "Assign Staff to Patient"
+            "View Patient History(Admin)",
+            "Assign Staff to Patient",
+            "View Billing History"
         ]
     elif user.role == "staff":
         pages = ["Add Staff Log", "View Patient History"]
     elif user.role == "patient":
-        pages = ["Add Patient Log", "View My Logs"]
+        pages = ["Add Patient Log", "View My Logs", "Payment Form"]
     else:
         st.error("Unknown role detected.")
         return
@@ -163,3 +166,12 @@ def launch():
                 st.info("No logs recorded yet.")
         else:
             st.error("Your patient record was not found.")
+
+    elif page=="Payment Form":
+        payment_form()
+    
+    elif page == "View Billing History":
+        view_billing_history()
+
+    elif page == "View Patient History(Admin)":
+        view_patient_history_admin_page()
