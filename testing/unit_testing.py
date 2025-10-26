@@ -33,4 +33,3 @@ def test_patient_services():
     assert result is True
 
 
-
