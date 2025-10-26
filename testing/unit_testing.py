@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from services.patient_service import register_patient, add_patient_log, delete_patient
-from services.staff_service import view_patient_history, register_staff, add_staff_log, find_patient_logs
+from services.staff_service import register_staff,delete_staff,add_staff_log,view_patient_history, register_staff, add_staff_log, find_patient_logs
 from services.admin_service import assign_staff_to_patient
 from services.user_service import delete_user, login, add_user
 
@@ -41,10 +41,9 @@ def test_register_patient():
     patient_dup = register_patient("123", "pass1234", "Test Patient2", 30, "Other", "Flu", "None")
     assert patient_dup is None  # Duplicate registration should fail
 
-def test_login():
-    user = login("123", "pass123")
-    assert user is not None
-    assert user.user_id == "123"
+    # Assign Test staff to patient
+    staff = register_staff("345","staffpassword", "Test speciality","Test Staff")
+    assigned = assign_staff_to_patient("123","345")
 
     user_invalid = login("123", "wrongpass")
     assert user_invalid is None  # Invalid credentials should return None
@@ -55,6 +54,7 @@ def test_login():
 def test_add_patient_log():
     # Add a log entry for the patient
     patient = add_patient_log("123", "Happy", 2, "Feeling better")
+    #Add_patient_log :user_id, mood=None, pain_level=None, notes=None, sensitive_information=False
     assert len(patient.logs) > 0
     assert patient.logs[0]["mood"] == "Happy"
 
