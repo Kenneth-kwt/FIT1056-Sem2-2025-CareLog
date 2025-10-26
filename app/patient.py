@@ -12,6 +12,7 @@ class PatientUser(User):
         self.culture_and_religion = culture_and_religion
         self.logs = []
         self.assigned_staff_ids = assigned_staff_ids or []
+        self.bills= []
 
     def to_dict(self): 
         """Convert PatientUser object into a dictionary for JSON storage."""
@@ -25,7 +26,8 @@ class PatientUser(User):
             "ailment": self.ailment,
             "culture_and_religion": self.culture_and_religion,
             "assigned_staff_ids": self.assigned_staff_ids,
-            "logs": self.logs
+            "logs": self.logs,
+            "bills": self.bills
         }
     
     def add_log(self, mood=None, pain_level=None, notes=None, sensitive_information=False):
@@ -46,6 +48,20 @@ class PatientUser(User):
             }
             self.logs.append(log_entry)
 
+    def pay_bills(self, amount, method, notes=None):
+        """
+        Pay medical bills as a patient
+        """
+        bill={
+            "amount":amount,
+            "method":method,
+            "notes":notes or "No notes"
+        }
+        if bill:
+            self.bills.append(bill)
+            return True
+        return False
+
     @classmethod
     def from_dict(cls, data):
         """Recreate a PatientUser from a JSON dictionary."""
@@ -60,4 +76,5 @@ class PatientUser(User):
             assigned_staff_ids=data.get("assigned_staff_ids", [])
         )
         patient.logs = data.get("logs", [])
+        patient.bills = data.get("bills",[])
         return patient

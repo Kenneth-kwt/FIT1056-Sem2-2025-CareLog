@@ -16,62 +16,26 @@
             "role": "admin"
         },
         {
-            "user_id": "1",
+            "user_id": "2",
             "password": "Hoh",
             "role": "patient"
-        },
-        {
-            "user_id": "2",
-            "password": "New",
-            "role": "staff"
         }
     ],
     "patients": [
         {
-            "user_id": "1",
+            "user_id": "2",
             "password": "Hoh",
             "role": "patient",
             "name": "Ryan Hoh",
             "age": 20,
             "gender": "Male",
-            "ailment": "Stomachache",
+            "ailment": "Headache",
             "culture_and_religion": "Chinese",
-            "assigned_staff_ids": [
-                "2"
-            ],
-            "logs": [
-                {
-                    "mood": "Happy",
-                    "pain_level": 1,
-                    "notes": "Food is good",
-                    "timestamp": "2025-10-26 15:02:38",
-                    "sensitive_information": false
-                }
-            ]
+            "assigned_staff_ids": [],
+            "logs": [],
+            "bills": []
         }
     ],
-    "staff": [
-        {
-            "user_id": "2",
-            "password": "New",
-            "role": "staff",
-            "name": "John Bill",
-            "speciality": "Doctor",
-            "assigned_patient_ids": [
-                "1"
-            ],
-            "logs": [
-                {
-                    "patient_id": "1",
-                    "patient_symptoms": "Vomit",
-                    "patient_log_timestamp": "",
-                    "diagnosis": "Food Poisoning",
-                    "prescription": "Charcoal",
-                    "notes": "Replenish Water",
-                    "staff_log_timestamp": "2025-10-26 15:14:02"
-                }
-            ]
-        }
-    ],
+    "staff": [],
     "next_user_id": 3
 }

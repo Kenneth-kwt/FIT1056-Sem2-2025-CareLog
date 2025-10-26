@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils.storage import load_data
 
-from services.patient_service import register_patient, delete_patient
+from services.patient_service import register_patient, delete_patient,patient_bill
 from services.admin_service import assign_staff_to_patient
 from services.staff_service import add_staff_log, view_patient_history
 
@@ -106,3 +106,33 @@ def assign_staff_to_patient_form():
             st.success(f"Staff '{staff_id}' assigned to patient '{patient_id}' successfully.")
         else:
             st.error("Assignment failed — patient not found or staff already assigned.")
+
+def payment_form():
+    """Display a form for patients to pay their medical bills."""
+    st.header("Pay Medical Bill")
+
+    # Make sure the user is logged in
+    if "user" not in st.session_state or st.session_state.user.role.lower() != "patient":
+        st.warning("Please log in as a patient to access this feature.")
+        return
+
+    user = st.session_state.user
+    st.write(f"Logged in as: **{user.user_id}**")
+
+    # Payment form
+    with st.form("payment_form"):
+        amount = st.number_input("Amount (RM)", min_value=0.0, step=0.5, format="%.2f")
+        method = st.selectbox("Payment Method", ["Credit Card", "Debit Card", "Online Banking", "Cash"])
+        notes = st.text_area("Notes (optional)", placeholder="E.g. paying for MRI scan")
+
+        submitted = st.form_submit_button("Submit Payment")
+
+        if submitted:
+            if amount <= 0:
+                st.error("Please enter a valid payment amount.")
+            else:
+                patient = patient_bill(user.user_id, amount, method, notes)
+                if patient:
+                    st.success(f"Payment of RM{amount:.2f} via {method} was successful!")
+                else:
+                    st.error("Payment failed. Patient record not found.")
