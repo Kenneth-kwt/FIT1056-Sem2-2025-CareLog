@@ -156,7 +156,12 @@ def view_patient_history(patient_id, staff_id):
             patient_ailment = p["ailment"]
             for s in staff:
                 if s["user_id"] in p["assigned_staff_ids"]:
-                    staff_logs[s["name"]] = s["logs"]
+                    patient_specific_logs = []
+                    #Empty list to store logs by staff specifically for patient
+                    for i in s["logs"]:
+                        if i["patient_id"] == patient_id:
+                            patient_specific_logs.append(i)
+                    staff_logs[s["name"]] = patient_specific_logs
     #Store staff logs as "staff_name":[list of logs]
             
             patient_history = {'patient_ailment': patient_ailment,'patient_logs':patient_logs, 'staff_logs':staff_logs}
